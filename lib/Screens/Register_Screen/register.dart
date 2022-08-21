@@ -61,18 +61,6 @@ class RegisterScreen extends StatelessWidget {
                       lable: 'first name',
                     ),
                     defaultSizeBox(),
-                    defaultFormField(
-                      controller: lastnameController,
-                      validat: (String value) {
-                        if (value.isEmpty) {
-                          return 'This Field Must\'n be Empty';
-                        } else {
-                          return null;
-                        }
-                      },
-                      keyboardType: TextInputType.name,
-                      lable: 'last name',
-                    ),
                     defaultSizeBox(),
                     defaultFormField(
                         controller: emailController,
@@ -128,27 +116,28 @@ class RegisterScreen extends StatelessWidget {
                     ),
                     defaultSizeBox(),
                     ConditionalBuilder(
-                      condition: state is! RegisterLoadingState,
-                      fallback: (context) => Center(child: CircularProgressIndicator(),),
-                      builder: (context) {
-                        return defaultButton(
-                          context: context,
-                          txt: 'Register',
-                          iconty: Icons.door_front_door_outlined,
-                          onTap: () {
-                            if (formKey.currentState!.validate()) {
-                              cubit.userRegister(
-                                email: emailController.text,
-                                password: passwordController.text,
-                                fristName: firstNameController.text,
-                                lastName: lastnameController.text,
-                                phone: phoneController.text,
-                              );
-                            }
-                          },
-                        );
-                      }
-                    ),
+                        condition: state is! RegisterLoadingState,
+                        fallback: (context) => Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                        builder: (context) {
+                          return defaultButton(
+                            context: context,
+                            txt: 'Register',
+                            iconty: Icons.door_front_door_outlined,
+                            onTap: () {
+                              if (formKey.currentState!.validate()) {
+                                cubit.userRegister(
+                                  email: emailController.text,
+                                  password: passwordController.text,
+                                  fristName: firstNameController.text,
+                                  lastName: lastnameController.text,
+                                  phone: phoneController.text,
+                                );
+                              }
+                            },
+                          );
+                        }),
                   ],
                 )),
           ),

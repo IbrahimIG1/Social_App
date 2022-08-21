@@ -28,6 +28,7 @@ class RegisterCubit extends Cubit<InitialState> {
           email: email,
           password: password,
           fristName: fristName,
+          bio: 'bio',
           lastName: lastName,
           phone: phone,
           cover: 'https://img.freepik.com/free-photo/vegetables-from-basket-wooden-table_155003-5607.jpg?w=1060&t=st=1660922319~exp=1660922919~hmac=5a581227f4f9f9c761963ac2a66dba4f40775381601a83bddd9d25ae8baa8f57',
@@ -48,6 +49,7 @@ class RegisterCubit extends Cubit<InitialState> {
     required String uId,
     required String image,
     required String cover,
+    required String bio,
   }) {
     // take instance from class UserModel To Send From toMap Function
     UserModel userData = UserModel(
@@ -55,7 +57,7 @@ class RegisterCubit extends Cubit<InitialState> {
       email: email,
       uId: uId,
       fristName: fristName,
-      lastName: lastName,
+      bio: bio,
       password: password,
       phone: phone,
       image: image,

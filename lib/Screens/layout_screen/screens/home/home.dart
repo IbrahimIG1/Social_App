@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../layout_cubit/cubit_state.dart';
 
-class Feeds extends StatelessWidget {
-  const Feeds({Key? key}) : super(key: key);
+class Home extends StatelessWidget {
+  const Home({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +64,7 @@ class Feeds extends StatelessWidget {
           );
         });
   }
-
+  // user Post with image and text
   Widget postCard(context, LayoutCubit cubit) => Card(
         elevation: 5,
         clipBehavior: Clip.antiAliasWithSaveLayer,

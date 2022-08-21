@@ -1,7 +1,8 @@
 /*  this class For User Data In FireStore */
 class UserModel {
   String? fristName;
-  String? lastName;
+  String? bio;
+
   String? phone;
   String? email;
   String? password;
@@ -11,18 +12,19 @@ class UserModel {
   bool? isVerify;
 
   UserModel(
-      {required this.email,
-      required this.fristName,
-      required this.lastName,
-      required this.password,
-      required this.phone,
-      required this.uId,
-      required this.image,
-      required this.cover,
-      required this.isVerify});
+      {this.email,
+       this.fristName,
+       this.bio,
+      this.password,
+       this.phone,
+      this.uId,
+       this.image,
+       this.cover,
+      this.isVerify});
   UserModel.fromJson(Map<String, dynamic> json) {
     fristName = json['first_name'];
-    lastName = json['last_name'];
+    bio = json['bio'];
+
     phone = json['phone'];
     email = json['email'];
     password = json['password'];
@@ -34,7 +36,7 @@ class UserModel {
   Map<String, dynamic> toMap() {
     return {
       'first_name': fristName,
-      'last_name': lastName,
+      'bio': bio,
       'phone': phone,
       'email': email,
       'password': password,

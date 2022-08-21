@@ -36,13 +36,15 @@ dependencies:
   cupertino_icons: ^1.0.2
   conditional_builder_null_safety: ^0.0.6
   shared_preferences: ^2.0.15
+  image_picker: ^0.8.5+3
+  fluttertoast: ^8.0.9
 
   #firebase
   firebase_core: ^1.20.1
   cloud_firestore: ^3.4.4
   firebase_auth: ^3.6.3
   flutter_bloc: ^8.0.1
-  fluttertoast: ^8.0.9
+  firebase_storage: ^10.3.6
 
 
 dev_dependencies:

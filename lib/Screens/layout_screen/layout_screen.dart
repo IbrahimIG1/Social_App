@@ -20,7 +20,8 @@ class LayoutScreen extends StatelessWidget {
           return Scaffold(
               appBar: AppBar(
                 title: Text(
-                  'New Feed',
+                  cubit.appBarTitle[cubit.currentIndex]
+                  ,
                   style: TextStyle(color: Colors.black),
                 ),
                 backgroundColor: Colors.white,
