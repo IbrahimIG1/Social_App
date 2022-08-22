@@ -21,7 +21,6 @@ class LayoutCubit extends Cubit<InitialState> {
   UserModel? model;
   PostModel? postModel;
 
-
   void getUserData() {
     FirebaseFirestore.instance.collection('users').doc(uId).get().then((value) {
       emit(LayoutLoadingState());
@@ -240,13 +239,10 @@ class LayoutCubit extends Cubit<InitialState> {
   File? postImageFile;
   String postImageUrl = '';
 
-
   // Upload Post Image And Create Post In There
-  void uploadPostImage
-  (
-    {String? text,
-    }
-  ) {
+  void uploadPostImage({
+    String? text,
+  }) {
     emit(CreatePostLoadingState());
     firebase_storage.FirebaseStorage.instance
         .ref()
@@ -259,7 +255,8 @@ class LayoutCubit extends Cubit<InitialState> {
       // getDownloadURL Get Image From Firebase
       value.ref.getDownloadURL().then((value) {
         postImageUrl = value;
-        createPost(dateTime: DateTime.now().toString(),postImage: value,text: text);
+        createPost(
+            dateTime: DateTime.now().toString(), postImage: value, text: text);
         emit(UploadPostImageSuccess());
         print('getDownloadURL Done in Upload post image');
       }).catchError((error) {
@@ -290,8 +287,7 @@ class LayoutCubit extends Cubit<InitialState> {
     String? dateTime,
     String? text,
     String? id,
-  }) 
-  {
+  }) {
     // Model To Pass New User Data To Firebase
     PostModel newPost = PostModel(
       fristName: model!.fristName,
@@ -301,45 +297,87 @@ class LayoutCubit extends Cubit<InitialState> {
       image: model!.image!,
       postImage: postImage ?? '',
     );
-    if(text !=null && postImage!=null)
-    FirebaseFirestore.instance
-        .collection('posts')
-        .add(newPost.toMap())
-        .then((value) {
-          postImageFile == null ;
-          getPosts();
-          print('Create Post Done');
-      emit(CreatePostSuccessState());
-    }).catchError((error) {
-      print('Error In Create Post => $error');
-      emit(CreatePostErrorState());
-    });
+    if (text != null && postImage != null)
+      FirebaseFirestore.instance
+          .collection('posts')
+          .add(newPost.toMap())
+          .then((value) {
+        postImageFile == null;
+        getPosts();
+        print('Create Post Done');
+        emit(CreatePostSuccessState());
+      }).catchError((error) {
+        print('Error In Create Post => $error');
+        emit(CreatePostErrorState());
+      });
   }
-  
+
   // Remove post Image Which Selected
-  void closedPostImage()
-  {
+  void closedPostImage() {
     postImageFile = null;
     emit(ClosedPostImageSuccess());
   }
 
-List<PostModel> posts = [];
-  void getPosts()
-  {
+  List<PostModel> posts = [];
+  List<String> postsId = [];
+  List<int> likes = [];
+  List<int> comments = [];
+
+  void getPosts() {
     posts = [];
+    postsId = [];
+    likes = [];
+    comments = [];
     emit(GetPostsLoadingState());
-    FirebaseFirestore.instance.collection('posts').get().then((value) 
-    {
-      value.docs.forEach((element)
-      {
-        posts.add(PostModel.fromJson(element.data()));
+    FirebaseFirestore.instance.collection('posts').get().then((value) {
+      value.docs.forEach((element) {
+        // Enter In Likes Collections Adn Get Number Of Users Click Like And Save In Likes List
+        element.reference.collection('likes').get().then((valueLikes) {
+          element.reference.collection('comments').get().then((valueComments) {
+            comments.add(valueComments.docs.length);
+            likes.add(valueLikes.docs.length);
+            posts.add(PostModel.fromJson(element.data()));
+
+            postsId.add(element.id);
+            emit(GetPostsSuccessState());
+          });
+        });
       });
       print('Get Posts Done');
-      emit(GetPostsSuccessState());
-    }).catchError((error)
-    {
+    }).catchError((error) {
       print('Error In Get posts');
       emit(GetPostsErrorState());
+    });
+  }
+
+  // Save Like in Firebase In New Coolection In post Collection With post Id
+  void postLike(String postId) {
+    FirebaseFirestore.instance
+        .collection('posts')
+        .doc(postId)
+        .collection('likes')
+        .doc(model!.uId)
+        .set({'like': true}).then((value) {
+      print('Like');
+      emit(PostsLikesSuccessState());
+    }).catchError((error) {
+      print('Error In Posts Likes');
+      emit(PostsLikesErrorState());
+    });
+  }
+
+  void postComment(String postId) {
+    FirebaseFirestore.instance
+        .collection('posts')
+        .doc(postId)
+        .collection('comments')
+        .doc(model!.uId)
+        .set({'comment': true}).then((value) {
+      print('Comment');
+      emit(PostsLikesSuccessState());
+    }).catchError((error) {
+      print('Error In Posts Comment');
+      emit(PostsLikesErrorState());
     });
   }
 }

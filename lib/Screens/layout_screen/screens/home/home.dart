@@ -16,7 +16,7 @@ class Home extends StatelessWidget {
         builder: (context, state) {
           var cubit = LayoutCubit.get(context);
           return ConditionalBuilder(
-            condition: cubit.posts.length > 0,
+            condition: cubit.posts.length > 0 && cubit.likes.length > 0,
             builder: (context) {
               return SingleChildScrollView(
                 physics: BouncingScrollPhysics(),
@@ -56,6 +56,7 @@ class Home extends StatelessWidget {
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
                             return postCard(
+                                index: index,
                                 context: context,
                                 cubit: cubit,
                                 model: cubit.posts[
@@ -67,7 +68,14 @@ class Home extends StatelessWidget {
                           itemCount: cubit.posts.length),
                     SizedBox(
                       height: 8,
-                    )
+                    ),
+                    if (cubit.model == null)
+                      Center(
+                        child: Text(
+                          'Share Posts With Your Friends',
+                          style: TextStyle(fontSize: 20, color: Colors.grey),
+                        ),
+                      )
                   ],
                 ),
               );
@@ -78,7 +86,8 @@ class Home extends StatelessWidget {
   }
 
   // user Post with image and text
-  Widget postCard({context, PostModel? model, LayoutCubit? cubit}) => Card(
+  Widget postCard({context, PostModel? model, LayoutCubit? cubit, index}) =>
+      Card(
         elevation: 5,
         clipBehavior: Clip.antiAliasWithSaveLayer,
         child: Padding(
@@ -111,11 +120,11 @@ class Home extends StatelessWidget {
             //       ),
             //     )),
             if (model.postImage != '') postImag(model),
-            likeAndComment(),
+            likeAndComment(cubit, index),
             Divider(
               color: Colors.grey,
             ),
-            WriteAComment(context, cubit),
+            WriteAComment(context, cubit, index),
           ]),
         ),
       );
@@ -168,38 +177,50 @@ class Home extends StatelessWidget {
                 fit: BoxFit.cover, image: NetworkImage('${model.postImage}'))),
       );
   // Row Have Number Of Likes , Comments
-  Widget likeAndComment() => Row(
-        children: [
-          Expanded(
-            child: InkWell(
-              child: Row(children: [
-                Icon(Icons.heart_broken, color: Colors.red),
-                SizedBox(
-                  width: 5,
-                ),
-                Text('120'),
-              ]),
+  Widget likeAndComment(LayoutCubit cubit, index) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10.0),
+        child: Row(
+          children: [
+            Expanded(
+              child: InkWell(
+                child: Row(children: [
+                  Icon(Icons.heart_broken, color: Colors.red),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Text(cubit.likes.length == 0
+                      ? "0"
+                      : cubit.likes[index].toString()),
+                ]),
+              ),
             ),
-          ),
-          Spacer(),
-          Expanded(
-            child: InkWell(
-              child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                Icon(
-                  Icons.comment,
-                  color: Colors.blueGrey,
-                ),
-                SizedBox(
-                  width: 5,
-                ),
-                Text('120'),
-              ]),
+            Spacer(),
+            Expanded(
+              child: InkWell(
+                child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                  Icon(
+                    Icons.comment,
+                    color: Colors.blueGrey,
+                  ),
+                  
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Text(cubit.comments.length == 0
+                      ? "0"
+                      : cubit.comments[index].toString()),
+                       SizedBox(
+                    width: 5,
+                  ),
+                      Text('comment')
+                ]),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       );
   // Row Where Write A comment
-  Widget WriteAComment(context, LayoutCubit cubit) => Row(children: [
+  Widget WriteAComment(context, LayoutCubit cubit, index) => Row(children: [
         CircleAvatar(
           radius: 15,
           backgroundImage: NetworkImage("${cubit.model!.image}"
@@ -209,20 +230,34 @@ class Home extends StatelessWidget {
         SizedBox(
           width: 8,
         ),
-        Text(
-          'write comment...',
-          style: Theme.of(context).textTheme.caption,
+        TextButton(
+          child: Text(
+            'write comment...',
+            style: Theme.of(context).textTheme.caption,
+          ),
+          onPressed: () {
+            cubit.postComment(cubit.postsId[index]);
+          },
         ),
         Spacer(),
-        Row(children: [
-          Icon(
-            Icons.heart_broken,
-            color: Colors.red,
-          ),
-          SizedBox(
-            width: 5,
-          ),
-          Text('like'),
-        ]),
+        Container(
+          width: 69,
+          child: IconButton(
+              onPressed: () {
+                cubit.postLike(cubit.postsId[index]);
+              },
+              icon: Row(
+                children: [
+                  Icon(
+                    Icons.heart_broken,
+                    color: Colors.red,
+                  ),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Text('like'),
+                ],
+              )),
+        )
       ]);
 }

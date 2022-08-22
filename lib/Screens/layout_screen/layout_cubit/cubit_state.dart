@@ -53,3 +53,11 @@ class ClosedPostImageSuccess extends InitialState{}
 class GetPostsLoadingState extends InitialState{}
 class GetPostsSuccessState extends InitialState{}
 class GetPostsErrorState extends InitialState{}
+
+
+// posts Likes
+class PostsLikesSuccessState extends InitialState{}
+class PostsLikesErrorState extends InitialState{}
+// posts Comments
+class PostsCommentsSuccessState extends InitialState{}
+class PostsCommentsErrorState extends InitialState{}
