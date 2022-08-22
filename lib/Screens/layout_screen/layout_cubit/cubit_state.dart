@@ -11,6 +11,7 @@ class LayoutErrorState extends InitialState {
   LayoutErrorState(this.error);
 }
 class ChangeNav extends InitialState{}
+class PostScreenState extends InitialState{}
 
 class GetProfileImageSuccess extends InitialState{}
 
@@ -31,3 +32,24 @@ class UploadCoverImageError extends InitialState{}
 class UpdateUsersDataLoadingState extends InitialState {}
 
 class UpdateUserDataError extends InitialState{}
+
+// create post 
+class CreatePostLoadingState extends InitialState {}
+class CreatePostSuccessState extends InitialState {}
+class CreatePostErrorState extends InitialState {}
+
+class UploadPostImageSuccess extends InitialState{}
+
+class UploadPostImageError extends InitialState{}
+
+class GetPostImageSuccess extends InitialState{}
+
+class GetPostImageError extends InitialState{}
+
+class ClosedPostImageSuccess extends InitialState{}
+
+// get posts
+
+class GetPostsLoadingState extends InitialState{}
+class GetPostsSuccessState extends InitialState{}
+class GetPostsErrorState extends InitialState{}

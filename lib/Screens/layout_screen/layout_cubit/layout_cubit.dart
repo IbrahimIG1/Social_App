@@ -4,6 +4,7 @@ import 'package:firebase_app/Constance/constance.dart';
 import 'package:firebase_app/Screens/layout_screen/layout_cubit/cubit_state.dart';
 import 'package:firebase_app/Screens/layout_screen/screens/chats/chats.dart';
 import 'package:firebase_app/Screens/layout_screen/screens/users/users.dart';
+import 'package:firebase_app/model/post_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -18,7 +19,9 @@ class LayoutCubit extends Cubit<InitialState> {
 
   static LayoutCubit get(context) => BlocProvider.of(context);
   UserModel? model;
-  
+  PostModel? postModel;
+
+
   void getUserData() {
     FirebaseFirestore.instance.collection('users').doc(uId).get().then((value) {
       emit(LayoutLoadingState());
@@ -35,6 +38,9 @@ class LayoutCubit extends Cubit<InitialState> {
   int currentIndex = 0;
   void changeNav(int index) {
     currentIndex = index;
+    // if (currentIndex == 2) {
+    //   emit(PostScreenState());
+    // }
     emit(ChangeNav());
   }
 
@@ -162,8 +168,7 @@ class LayoutCubit extends Cubit<InitialState> {
     String? email,
     String? coverImage,
     String? profileImage,
-  }) 
-  {
+  }) {
     // take instance from class UserModel To Send From toMap Function
     UserModel newUserData = UserModel(
       fristName: fristName ?? model!.fristName,
@@ -177,14 +182,14 @@ class LayoutCubit extends Cubit<InitialState> {
       image: profileImage != null ? model!.image! : profileImageUrl,
     );
     emit(UpdateUsersDataLoadingState());
-  // If Cover Image Change 
+    // If Cover Image Change
     if (coverImageFile != null) {
-      // Updload Cover Image And There Func "uploadCoverImage()" Update Only 
+      // Updload Cover Image And There Func "uploadCoverImage()" Update Only
       uploadCoverImage();
       print('uploadCoverImage');
-      // If Profile Image Change 
+      // If Profile Image Change
     } else if (profileImageFile != null) {
-      // Updload Profile Image And There Func "uploadProfileImage()" Update Only 
+      // Updload Profile Image And There Func "uploadProfileImage()" Update Only
       uploadProfileImage();
       print('uploadProfileImage');
     } else {
@@ -200,15 +205,13 @@ class LayoutCubit extends Cubit<InitialState> {
   }
 
   // Function To Update Image Only Without other data
-  void updateOnly({
-    String? fristName,
-    String? phone,
-    String? bio,
-    String? email,
-    String? coverImage,
-    String? profileImage,
-  }) 
-  { 
+  void updateOnly(
+      {String? fristName,
+      String? phone,
+      String? bio,
+      String? email,
+      String? coverImage,
+      String? profileImage}) {
     // Model To Pass New User Data To Firebase
     UserModel newUserData = UserModel(
       fristName: fristName ?? model!.fristName,
@@ -232,5 +235,111 @@ class LayoutCubit extends Cubit<InitialState> {
       print('Upadate Done');
       getUserData();
     }).catchError((error) {});
+  }
+
+  File? postImageFile;
+  String postImageUrl = '';
+
+
+  // Upload Post Image And Create Post In There
+  void uploadPostImage
+  (
+    {String? text,
+    }
+  ) {
+    emit(CreatePostLoadingState());
+    firebase_storage.FirebaseStorage.instance
+        .ref()
+        // child create Folder To Save Path Image // Uri To Get true url From File CoverImage
+        .child('posts/${Uri.file(postImageFile!.path).pathSegments.last}')
+        //  putFile Save The Image
+        .putFile(postImageFile!)
+        .then((value) {
+      print('First Then Upload Image Post');
+      // getDownloadURL Get Image From Firebase
+      value.ref.getDownloadURL().then((value) {
+        postImageUrl = value;
+        createPost(dateTime: DateTime.now().toString(),postImage: value,text: text);
+        emit(UploadPostImageSuccess());
+        print('getDownloadURL Done in Upload post image');
+      }).catchError((error) {
+        emit(UploadPostImageError());
+        print('Error In Upload Post Image in Then one');
+      });
+    }).catchError((error) {
+      emit(UploadPostImageError());
+      print('Error In Upload Post Image in Then Tow');
+    });
+  }
+
+  Future<void> getPostImage() async {
+    picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (picker != null) {
+      postImageFile = File(pickedFile!.path);
+      emit(GetPostImageSuccess());
+    } else {
+      print('No Image Selected');
+      emit(GetPostImageError());
+    }
+  }
+
+  // Create Post Without Image Like Create User In Register
+  void createPost({
+    String? postImage,
+    String? dateTime,
+    String? text,
+    String? id,
+  }) 
+  {
+    // Model To Pass New User Data To Firebase
+    PostModel newPost = PostModel(
+      fristName: model!.fristName,
+      uId: model!.uId,
+      dateTime: dateTime,
+      text: text,
+      image: model!.image!,
+      postImage: postImage ?? '',
+    );
+    if(text !=null && postImage!=null)
+    FirebaseFirestore.instance
+        .collection('posts')
+        .add(newPost.toMap())
+        .then((value) {
+          postImageFile == null ;
+          getPosts();
+          print('Create Post Done');
+      emit(CreatePostSuccessState());
+    }).catchError((error) {
+      print('Error In Create Post => $error');
+      emit(CreatePostErrorState());
+    });
+  }
+  
+  // Remove post Image Which Selected
+  void closedPostImage()
+  {
+    postImageFile = null;
+    emit(ClosedPostImageSuccess());
+  }
+
+List<PostModel> posts = [];
+  void getPosts()
+  {
+    posts = [];
+    emit(GetPostsLoadingState());
+    FirebaseFirestore.instance.collection('posts').get().then((value) 
+    {
+      value.docs.forEach((element)
+      {
+        posts.add(PostModel.fromJson(element.data()));
+      });
+      print('Get Posts Done');
+      emit(GetPostsSuccessState());
+    }).catchError((error)
+    {
+      print('Error In Get posts');
+      emit(GetPostsErrorState());
+    });
   }
 }

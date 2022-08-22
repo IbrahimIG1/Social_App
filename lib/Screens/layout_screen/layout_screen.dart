@@ -1,11 +1,12 @@
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:firebase_app/Screens/layout_screen/layout_cubit/cubit_state.dart';
 import 'package:firebase_app/Screens/layout_screen/layout_cubit/layout_cubit.dart';
+import 'package:firebase_app/Screens/layout_screen/screens/posts/post.dart';
 import 'package:firebase_app/shared/flutter_toast/flutter_toast.dart';
+import 'package:firebase_app/shared/navigators/navigators.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LayoutScreen extends StatelessWidget {
@@ -20,8 +21,7 @@ class LayoutScreen extends StatelessWidget {
           return Scaffold(
               appBar: AppBar(
                 title: Text(
-                  cubit.appBarTitle[cubit.currentIndex]
-                  ,
+                  cubit.appBarTitle[cubit.currentIndex],
                   style: TextStyle(color: Colors.black),
                 ),
                 backgroundColor: Colors.white,

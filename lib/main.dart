@@ -29,15 +29,16 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        
-        BlocProvider(create:(context)=>LayoutCubit()..getUserData() ,),
+        BlocProvider(
+          create: (context) => LayoutCubit()
+            ..getUserData()
+            ..getPosts(),
+        ),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
-          primarySwatch: Colors.blue,
-          scaffoldBackgroundColor: Colors.white
-        ),
+            primarySwatch: Colors.blue, scaffoldBackgroundColor: Colors.white),
         home: startWidget,
       ),
     );
