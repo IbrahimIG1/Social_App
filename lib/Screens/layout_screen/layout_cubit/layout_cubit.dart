@@ -4,6 +4,7 @@ import 'package:firebase_app/Constance/constance.dart';
 import 'package:firebase_app/Screens/layout_screen/layout_cubit/cubit_state.dart';
 import 'package:firebase_app/Screens/layout_screen/screens/chats/chats.dart';
 import 'package:firebase_app/Screens/layout_screen/screens/users/users.dart';
+import 'package:firebase_app/model/chat_model/chat_model.dart';
 import 'package:firebase_app/model/post_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -37,9 +38,9 @@ class LayoutCubit extends Cubit<InitialState> {
   int currentIndex = 0;
   void changeNav(int index) {
     currentIndex = index;
-    // if (currentIndex == 2) {
-    //   emit(PostScreenState());
-    // }
+    if (currentIndex == 1) {
+      getAllUsers();
+    }
     emit(ChangeNav());
   }
 
@@ -167,7 +168,8 @@ class LayoutCubit extends Cubit<InitialState> {
     String? email,
     String? coverImage,
     String? profileImage,
-  }) {
+  }) 
+  {
     // take instance from class UserModel To Send From toMap Function
     UserModel newUserData = UserModel(
       fristName: fristName ?? model!.fristName,
@@ -210,7 +212,8 @@ class LayoutCubit extends Cubit<InitialState> {
       String? bio,
       String? email,
       String? coverImage,
-      String? profileImage}) {
+      String? profileImage}) 
+      {
     // Model To Pass New User Data To Firebase
     UserModel newUserData = UserModel(
       fristName: fristName ?? model!.fristName,
@@ -241,8 +244,9 @@ class LayoutCubit extends Cubit<InitialState> {
 
   // Upload Post Image And Create Post In There
   void uploadPostImage({
-    String? text,
-  }) {
+    String? text
+  }) 
+  {
     emit(CreatePostLoadingState());
     firebase_storage.FirebaseStorage.instance
         .ref()
@@ -286,8 +290,9 @@ class LayoutCubit extends Cubit<InitialState> {
     String? postImage,
     String? dateTime,
     String? text,
-    String? id,
-  }) {
+    String? id
+  }) 
+  {
     // Model To Pass New User Data To Firebase
     PostModel newPost = PostModel(
       fristName: model!.fristName,
@@ -366,6 +371,7 @@ class LayoutCubit extends Cubit<InitialState> {
     });
   }
 
+// Save Comments in Firebase In New Coolection In post Collection With post Id
   void postComment(String postId) {
     FirebaseFirestore.instance
         .collection('posts')
@@ -378,6 +384,142 @@ class LayoutCubit extends Cubit<InitialState> {
     }).catchError((error) {
       print('Error In Posts Comment');
       emit(PostsLikesErrorState());
+    });
+  }
+
+  List<UserModel> users = [];
+  // Get All User In Chat Screen
+  void getAllUsers() {
+    emit(GetUsersChatsLoadingState());
+    if (users.isEmpty) {
+      FirebaseFirestore.instance.collection('users').get().then((value) {
+        value.docs.forEach((element) {
+          uId == element.id
+              ? users.remove(UserModel.fromJson(element.data()))
+              : users.add(UserModel.fromJson(element.data()));
+          emit(GetUsersChatsSuccessState());
+          print('Get All Users Done');
+        });
+        print('Get All Users Done');
+      }).catchError((error) {
+        print('error In Get Users Chats => $error');
+        emit(GetUsersChatsErrorState());
+      });
+    }
+  }
+
+  //  Send Message From Sender Id And Recever Id
+  void sentMessage({
+    required String receverId,
+    required String text,
+    required String dateTime,
+    required String image,
+  }) 
+  {
+    ChatModel chatModel = ChatModel(
+        dateTime: dateTime,
+        receverid: receverId,
+        senderId: model!.uId,
+        text: text,
+        image: image);
+    //  save in sender Id email in firebase
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(model!.uId)
+        .collection('chats')
+        .doc(receverId)
+        .collection('messages')
+        .add(chatModel.toMap())
+        .then((value) {
+      if (messageImageFile != null) {
+        uploadMessageImage();
+      }
+      emit(SendMessagsSuccessState());
+    }).catchError((error) {
+      emit(SendMessagsErrorState());
+    });
+
+    //  save in srecever Id email in firebase
+
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(receverId)
+        .collection('chats')
+        .doc(model!.uId)
+        .collection('messages')
+        .add(chatModel.toMap())
+        .then((value) {
+      emit(SendMessagsSuccessState());
+    }).catchError((error) {
+      emit(SendMessagsErrorState());
+    });
+  }
+
+  List<ChatModel> messages = [];
+    // Get Message In Chat Screen Details
+  void getMessage({
+    required String receverId,
+  }) 
+  {
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(model!.uId)
+        .collection('chats')
+        .doc(receverId)
+        .collection('messages')
+        .orderBy('dateTime')
+        .snapshots()
+        .listen((event) {
+      messages = [];
+
+      event.docs.forEach((element) {
+        messages.add(ChatModel.fromJson(element.data()));
+      });
+      emit(GetMessagsSuccessState());
+    });
+  }
+
+  File? messageImageFile;
+  String messageImageUrl = '';
+
+  Future<void> getMessageImage() async {
+    messageImageFile = null;
+    picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (picker != null) {
+
+      messageImageFile = File(pickedFile!.path);
+      
+      emit(GetMessageImageSuccess());
+    } else {
+      print('No Image Selected');
+      emit(GetMessageImageError());
+    }
+  }
+
+  // Upload Image In Chat
+  void  uploadMessageImage() {
+    firebase_storage.FirebaseStorage.instance
+        .ref()
+        .child('user/${Uri.file(messageImageFile!.path).pathSegments.last}')
+        .putFile(messageImageFile!)
+        .then((value) {
+      value.ref.getDownloadURL().then((value) {
+        messageImageUrl = value;
+        
+        // messageImageFile= null;
+        emit(UploadMessageImageSuccess());
+        print('getDownloadURL Message Done in Upload Message image');
+        
+      }).catchError((error) {
+        emit(UploadMessageImageError());
+        print('Error In Upload Message Image in Then one');
+      });
+      messageImageFile = null;
+      print('messageImageFile Null Done');
+    }).catchError((error) {
+      emit(UploadMessageImageError());
+      print('Error In Upload Message Image in Then Tow');
     });
   }
 }

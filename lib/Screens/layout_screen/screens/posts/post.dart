@@ -8,7 +8,7 @@ class Posts extends StatelessWidget {
   var textController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<LayoutCubit, LayoutCubitstate>(
+    return BlocConsumer<LayoutCubit, LayoutCubitState>(
         listener: (context, state) {},
         builder: (context, state) {
           var cubit = LayoutCubit.get(context);

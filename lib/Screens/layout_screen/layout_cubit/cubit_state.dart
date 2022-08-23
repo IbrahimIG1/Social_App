@@ -1,6 +1,6 @@
-abstract class LayoutCubitstate {}
+abstract class LayoutCubitState {}
 
-class InitialState extends LayoutCubitstate {}
+class InitialState extends LayoutCubitState {}
 
 class LayoutLoadingState extends InitialState {}
 
@@ -61,3 +61,23 @@ class PostsLikesErrorState extends InitialState{}
 // posts Comments
 class PostsCommentsSuccessState extends InitialState{}
 class PostsCommentsErrorState extends InitialState{}
+
+// get Users Chats
+
+class GetUsersChatsLoadingState extends InitialState{}
+class GetUsersChatsSuccessState extends InitialState{}
+class GetUsersChatsErrorState extends InitialState{}
+
+//  Send Message
+class SendMessagsSuccessState extends InitialState{}
+class SendMessagsErrorState extends InitialState{}
+
+// Get Message
+class GetMessagsSuccessState extends InitialState{}
+
+ // Get Image Message
+class GetMessageImageSuccess extends InitialState{}
+class GetMessageImageError extends InitialState{}
+ // Upload Image Message
+class UploadMessageImageSuccess extends InitialState{}
+class UploadMessageImageError extends InitialState{}

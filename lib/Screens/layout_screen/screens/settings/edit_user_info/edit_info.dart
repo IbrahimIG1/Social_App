@@ -12,7 +12,7 @@ class EditUserInfo extends StatelessWidget {
   var bioController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<LayoutCubit, LayoutCubitstate>(
+    return BlocConsumer<LayoutCubit, LayoutCubitState>(
         listener: (context, state) {},
         builder: (context, state) {
           var cubit = LayoutCubit.get(context);

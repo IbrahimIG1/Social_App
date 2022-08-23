@@ -32,12 +32,19 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => LayoutCubit()
             ..getUserData()
-            ..getPosts(),
+            ..getPosts()..getAllUsers(),
         ),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
+          appBarTheme: AppBarTheme
+          (
+            elevation: 0,
+            backgroundColor: Colors.white,
+            titleTextStyle: TextStyle(color: Colors.black),
+            iconTheme: IconThemeData(color: Colors.black)
+          ),
             primarySwatch: Colors.blue, scaffoldBackgroundColor: Colors.white),
         home: startWidget,
       ),

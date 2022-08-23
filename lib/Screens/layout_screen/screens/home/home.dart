@@ -11,7 +11,7 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<LayoutCubit, LayoutCubitstate>(
+    return BlocConsumer<LayoutCubit, LayoutCubitState>(
         listener: (context, state) {},
         builder: (context, state) {
           var cubit = LayoutCubit.get(context);
@@ -145,7 +145,7 @@ class Home extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    'Ibrahim Elgammal',
+                    cubit.model!.fristName!,
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   SizedBox(
