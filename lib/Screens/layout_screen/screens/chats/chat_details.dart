@@ -79,24 +79,53 @@ class ChatDetails extends StatelessWidget {
                           );
                         }),
                   ),
-                  Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        border: Border.all(color: Colors.grey[300]!, width: 1)),
-                    clipBehavior: Clip.antiAliasWithSaveLayer,
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            controller: messageController,
-                            decoration: InputDecoration(
-                                hintText: 'Type Your Message here ...',
-                                border: InputBorder.none),
+                  Column(
+                    children: [
+                      if (cubit.messageImageFile != null)
+                        Container(
+                          width: 100,
+                          height: 120,
+                          child: Stack(
+                            alignment: Alignment.topLeft,
+                            children: [
+                              Container(
+                                  decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                image: FileImage(cubit.messageImageFile!),
+                              ))),
+                              IconButton(
+                                  onPressed: () 
+                                  {
+                                    cubit.closedMessageImage();
+                                  },
+                                  icon: Icon(
+                                    Icons.close,
+                                    color: Colors.red,
+                                  )),
+                            ],
                           ),
                         ),
-                        sendMessageButton(cubit),
-                      ],
-                    ),
+                      Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            border:
+                                Border.all(color: Colors.grey[300]!, width: 1)),
+                        clipBehavior: Clip.antiAliasWithSaveLayer,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                controller: messageController,
+                                decoration: InputDecoration(
+                                    hintText: 'Type Your Message here ...',
+                                    border: InputBorder.none),
+                              ),
+                            ),
+                            sendMessageButton(cubit),
+                          ],
+                        ),
+                      ),
+                    ],
                   )
                 ],
               ),
@@ -142,6 +171,7 @@ class ChatDetails extends StatelessWidget {
       );
 
   Widget sendMessageButton(LayoutCubit cubit) => Row(
+        // mainAxisAlignment: MainAxisAlignment.start,
         children: [
           IconButton(
               onPressed: () {
@@ -157,9 +187,9 @@ class ChatDetails extends StatelessWidget {
                     dateTime: DateTime.now().toString(),
                     receverId: model.uId!,
                     text: messageController.text,
-                    image: cubit.messageImageUrl == ''
-                        ? ''
-                        : cubit.messageImageUrl);
+                    image: cubit.messageImageUrl != ''
+                        ? cubit.messageImageUrl
+                        : '');
                 messageController.text = '';
                 cubit.messageImageFile == null;
               },

@@ -433,6 +433,8 @@ class LayoutCubit extends Cubit<InitialState> {
         .then((value) {
       if (messageImageFile != null) {
         uploadMessageImage();
+        
+        emit(SendMessagsSuccessState());
       }
       emit(SendMessagsSuccessState());
     }).catchError((error) {
@@ -507,7 +509,7 @@ class LayoutCubit extends Cubit<InitialState> {
       value.ref.getDownloadURL().then((value) {
         messageImageUrl = value;
         
-        // messageImageFile= null;
+        
         emit(UploadMessageImageSuccess());
         print('getDownloadURL Message Done in Upload Message image');
         
@@ -515,11 +517,15 @@ class LayoutCubit extends Cubit<InitialState> {
         emit(UploadMessageImageError());
         print('Error In Upload Message Image in Then one');
       });
-      messageImageFile = null;
+      messageImageUrl= '';
       print('messageImageFile Null Done');
     }).catchError((error) {
       emit(UploadMessageImageError());
       print('Error In Upload Message Image in Then Tow');
     });
+  }
+  void closedMessageImage() {
+    messageImageFile = null;
+    emit(ClosedPostImageSuccess());
   }
 }
