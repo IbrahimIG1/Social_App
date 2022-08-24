@@ -2,6 +2,7 @@ import 'package:firebase_app/Screens/layout_screen/layout_cubit/cubit_state.dart
 import 'package:firebase_app/Screens/layout_screen/layout_cubit/layout_cubit.dart';
 import 'package:firebase_app/Screens/layout_screen/screens/settings/edit_user_info/edit_info.dart';
 import 'package:firebase_app/shared/navigators/navigators.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../model/users_model/users_model.dart';
@@ -49,6 +50,23 @@ class SettingsScreen extends StatelessWidget {
                   height: 15,
                 ),
                 editProfileButtons(context),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                  OutlinedButton(onPressed: ()
+                  {
+                    FirebaseMessaging.instance.subscribeToTopic('announcement').then((value) 
+                    {
+                      print('subcribe Done');
+                    });
+                  },child: Text('Subscribe'),),
+                  OutlinedButton(onPressed: (){
+                    FirebaseMessaging.instance.unsubscribeFromTopic('announcement').then((value) 
+                    {
+                      print('un subcribe Done');
+                    });;
+                  },child: Text('UnSubscribe'),),
+                ],)
               ],
             ),
           );
