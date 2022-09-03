@@ -13,7 +13,7 @@ class ChatDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Builder(builder: (context) {
-      LayoutCubit.get(context).getMessage(receverId: model.uId!);
+      LayoutCubit.get(context). getMessage(receverId: model.uId!);
       return BlocConsumer<LayoutCubit, LayoutCubitState>(
           listener: (context, state) {},
           builder: (context, state) {

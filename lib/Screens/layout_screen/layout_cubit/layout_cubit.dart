@@ -441,7 +441,7 @@ class LayoutCubit extends Cubit<InitialState> {
       emit(SendMessagsErrorState());
     });
 
-    //  save in srecever Id email in firebase
+    //  save in recever Id email in firebase
 
     FirebaseFirestore.instance
         .collection('users')
